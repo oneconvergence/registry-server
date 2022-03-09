@@ -1,3 +1,4 @@
+#!/bin/bash
 usage () {
     echo "USAGE: $0 [--address x.x.x.x]"
     echo "  [-i|--address IPAddress] Optional. Local IP of the machine on which this script is to be run."
