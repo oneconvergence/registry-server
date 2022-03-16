@@ -1,3 +1,4 @@
+#!/bin/bash
 usage () {
     echo "USAGE: $0 OPTION"
     echo "  [--start] Start proxy server."
@@ -8,7 +9,7 @@ usage () {
 start_proxy_server() {
     sudo docker run --name squid -d --restart=always \
       --publish 3128:3128 \
-      --volume $PWD/config/squid.conf:/etc/squid/squid.conf \
+      --volume $PWD/proxy-server/config/squid.conf:/etc/squid/squid.conf \
       --volume /srv/docker/squid/cache:/var/spool/squid \
       sameersbn/squid:3.5.27-2
 }
