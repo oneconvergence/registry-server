@@ -29,7 +29,7 @@ services:
   core:
     image: docker.io/bitnami/harbor-core:2.4.0
     extra_hosts:
-      - "registry-server.dkube.io:registry_server_IP"
+      - "registry-server.dkube.io:10.128.0.47"
     container_name: harbor-core
     depends_on:
       - registry

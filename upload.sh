@@ -79,25 +79,56 @@ if [[ ! -z $images ]]; then
 	fi 
 fi
 
-while read -r image; do
-	[ -z "${image}" ] && continue
-	if [[ -z $images ]]; then
-		sudo docker pull "$image"
-	fi
-	newimage=$image
-	img=$image
-	if [[ $img == *"@sha256:"* ]]; then
-		IFS='@'
-		#Read the split words into an array based on comma delimiter
-		read -a strarr <<< $img
+echo -- > time.txt
+echo ----------------------- | tee -a time.txt
+echo $list | tee -a time.txt
+echo Pull-Push images ------- | tee -a time.txt
+echo START size:  | tee -a time.txt
+df -h >> time.txt
+START=$(date +%s.%N)
+echo START time: $START | tee -a time.txt
+cat $list | parallel --bar -P 5  ./pull-push.sh
+END=$(date +%s.%N)
+echo END size: >> tee -a time.txt
+df -h >> time.txt
+echo END time: $END | tee -a time.txt
+DIFF=$(echo "$END - $START" | bc)
+echo DIFF time: $DIFF | tee -a time.txt
+echo ----------------------- | tee -a time.txt
 
-		imagename=${strarr[0]}
-		if [[ $imagename == *":"* ]]; then
-			newimage="$imagename-${img: -6}"
-		else
-			newimage="$imagename:${img: -6}"
-		fi
-	fi
-	sudo docker tag "$image" $reg/$newimage
-	sudo docker push $reg/$newimage
-done < $list
+#list="images/datascience.txt"
+#
+#echo ----------------------- | tee -a time.txt
+#echo $list | tee -a time.txt
+#echo Pull-Push images ------- | tee -a time.txt
+#START=$(date +%s.%N)
+#echo START time: $START | tee -a time.txt
+#cat $list | parallel --bar -P 5  ./pull-push.sh
+#END=$(date +%s.%N)
+#echo END time: $END | tee -a time.txt
+#DIFF=$(echo "$END - $START" | bc)
+#echo DIFF time: $DIFF | tee -a time.txt
+#echo ----------------------- | tee -a time.txt
+
+#while read -r image; do
+#	[ -z "${image}" ] && continue
+#	if [[ -z $images ]]; then
+#		sudo docker pull "$image"
+#	fi
+#	newimage=$image
+#	img=$image
+#	if [[ $img == *"@sha256:"* ]]; then
+#		IFS='@'
+#		#Read the split words into an array based on comma delimiter
+#		read -a strarr <<< $img
+#
+#		imagename=${strarr[0]}
+#		if [[ $imagename == *":"* ]]; then
+#			newimage="$imagename-${img: -6}"
+#		else
+#			newimage="$imagename:${img: -6}"
+#		fi
+#	fi
+#	sudo docker tag "$image" $reg/$newimage
+#	sudo docker push $reg/$newimage
+#done < $list
