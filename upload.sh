@@ -79,37 +79,42 @@ if [[ ! -z $images ]]; then
 	fi 
 fi
 
-echo -- > time.txt
-echo ----------------------- | tee -a time.txt
-echo $list | tee -a time.txt
-echo Pull-Push images ------- | tee -a time.txt
-echo START size:  | tee -a time.txt
-df -h >> time.txt
-START=$(date +%s.%N)
-echo START time: $START | tee -a time.txt
-cat $list | parallel --bar -P 5  ./pull-push.sh
-END=$(date +%s.%N)
-echo END size: >> tee -a time.txt
-df -h >> time.txt
-echo END time: $END | tee -a time.txt
-DIFF=$(echo "$END - $START" | bc)
-echo DIFF time: $DIFF | tee -a time.txt
-echo ----------------------- | tee -a time.txt
-
-#list="images/datascience.txt"
-#
-#echo ----------------------- | tee -a time.txt
-#echo $list | tee -a time.txt
-#echo Pull-Push images ------- | tee -a time.txt
+#echo -- > ds-time.txt
+#echo ----------------------- | tee -a ds-time.txt
+#echo Images file: $list | tee -a ds-time.txt
+#echo Pull-Push images ------- | tee -a ds-time.txt
+#echo START size:  | tee -a ds-time.txt
+#df -h >> ds-time.txt
 #START=$(date +%s.%N)
-#echo START time: $START | tee -a time.txt
+#echo START time: $START | tee -a ds-time.txt
 #cat $list | parallel --bar -P 5  ./pull-push.sh
 #END=$(date +%s.%N)
-#echo END time: $END | tee -a time.txt
+#echo END size: >> tee -a ds-time.txt
+#df -h >> ds-time.txt
+#echo END time: $END | tee -a ds-time.txt
 #DIFF=$(echo "$END - $START" | bc)
-#echo DIFF time: $DIFF | tee -a time.txt
-#echo ----------------------- | tee -a time.txt
+#echo DIFF time: $DIFF | tee -a ds-time.txt
+#echo ----------------------- | tee -a ds-time.txt
 
+ds_parallel () {
+list="images/datascience.txt"
+echo ----------------------- | tee -a ds-time.txt
+echo $list | tee -a ds-time.txt
+echo Pull-Push images ------- | tee -a ds-time.txt
+df -h >> ds-time.txt
+START=$(date +%s.%N)
+echo START time: $START | tee -a ds-time.txt
+cat $list | parallel --bar -P 5  ./pull-push.sh
+df -h >> ds-time.txt
+END=$(date +%s.%N)
+echo END time: $END | tee -a ds-time.txt
+DIFF=$(echo "$END - $START" | bc)
+echo DIFF time: $DIFF | tee -a ds-time.txt
+echo ----------------------- | tee -a ds-time.txt
+}
+
+
+ds_parallel &
 #while read -r image; do
 #	[ -z "${image}" ] && continue
 #	if [[ -z $images ]]; then

@@ -4,8 +4,8 @@
 reg="registry-server.dkube.io:443"
 image=$1
 
-echo "Pulling $image..." >> time.txt
-sudo docker pull "$image" 2>> time.txt 1>/dev/null
+echo "Pulling theimage: $image..." >> ds-time.txt
+sudo docker pull "$image" 2>> ds-time.txt
 
 newimage=$image
 img=$image
@@ -22,5 +22,5 @@ if [[ $img == *"@sha256:"* ]]; then
         fi
 fi
 sudo docker tag "$image" $reg/$newimage
-sudo docker push $reg/$newimage 2>> time.txt 1>/dev/null
-echo "Pushed $reg/$newimage!!" >> time.txt
+sudo docker push $reg/$newimage 2>> ds-time.txt
+echo "Pushed theimage: $reg/$newimage!!" >> ds-time.txt
