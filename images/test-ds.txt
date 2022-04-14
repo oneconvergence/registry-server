@@ -1,0 +1,2 @@
+docker.io/ocdr/dkube-datascience-rs-pytorch-cpu-multiuser:v1.6-10
+docker.io/ocdr/dkube-datascience-rs-pytorch-cpu-multiuser:v1.9-10

@@ -17,4 +17,4 @@ if [[ $img == *"@sha256:"* ]]; then
 	fi
 fi
 sudo docker tag "$image" $reg/$newimage
-sudo docker push --quiet $reg/$newimage
+sudo docker push $reg/$newimage 2>> ds-time.txt

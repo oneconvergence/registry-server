@@ -1,0 +1,4 @@
+docker.io/alpine
+docker.io/argoproj/argoexec:v3.1.13
+docker.io/argoproj/workflow-controller:v3.1.13
+docker.io/bash:latest

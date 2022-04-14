@@ -3,6 +3,8 @@ images=""
 reg="registry-server.dkube.io:443"
 list=""
 dkube_version=""
+log_file="/tmp/upload-images.log"
+metrics_file="time.txt"
 usage () {
     echo "USAGE: $0 --dkube-version 3.1.0.3 [--image-list images.txt] [--images images.tar or /path/to/images/directory] [--registry my.registry.com:5000]"
     echo "  [--dkube-version version] version of dkube of which images have to be uploaded."
@@ -60,7 +62,11 @@ if [[ ! -z $image_list ]]; then
 	list=$image_list
 fi
 
-if [[ ! -z $images ]]; then
+echo Logs available at: $log_file 
+echo Metrics available at: $metrics_file 
+
+if [[ ! -z $image_list && ! -z $images ]]; then
+	list=$image_list
 	if [ ! -d $images ]; then
 	    if [ -f $images ]; then
 		if [ [ $images == *.tar ] || [ $images == *.tar.gz ] ]; then
@@ -77,63 +83,12 @@ if [[ ! -z $images ]]; then
 	    	sudo docker load --input ${f} 
 	    done
 	fi 
+	cat $list | parallel --bar -P 5  ./scripts/push.sh
+else
+	echo "Uploading non-datascience images..." | tee -a $log_file
+	./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file 2>&1 | tee -a $log_file
+	echo "Done uploading non-datascience images!" | tee -a $log_file
+	echo "Uploading datascience images in the background..." | tee -a $log_file
+        echo "Follow progress using this command: tail -f $log_file" 
+	nohup ./scripts/parallel-pull-push.sh images/$dkube_version-ds.txt $metrics_file $log_file >> $log_file 2>&1 &
 fi
-
-#echo -- > ds-time.txt
-#echo ----------------------- | tee -a ds-time.txt
-#echo Images file: $list | tee -a ds-time.txt
-#echo Pull-Push images ------- | tee -a ds-time.txt
-#echo START size:  | tee -a ds-time.txt
-#df -h >> ds-time.txt
-#START=$(date +%s.%N)
-#echo START time: $START | tee -a ds-time.txt
-#cat $list | parallel --bar -P 5  ./pull-push.sh
-#END=$(date +%s.%N)
-#echo END size: >> tee -a ds-time.txt
-#df -h >> ds-time.txt
-#echo END time: $END | tee -a ds-time.txt
-#DIFF=$(echo "$END - $START" | bc)
-#echo DIFF time: $DIFF | tee -a ds-time.txt
-#echo ----------------------- | tee -a ds-time.txt
-
-ds_parallel () {
-list="images/datascience.txt"
-echo ----------------------- | tee -a ds-time.txt
-echo $list | tee -a ds-time.txt
-echo Pull-Push images ------- | tee -a ds-time.txt
-df -h >> ds-time.txt
-START=$(date +%s.%N)
-echo START time: $START | tee -a ds-time.txt
-cat $list | parallel --bar -P 5  ./pull-push.sh
-df -h >> ds-time.txt
-END=$(date +%s.%N)
-echo END time: $END | tee -a ds-time.txt
-DIFF=$(echo "$END - $START" | bc)
-echo DIFF time: $DIFF | tee -a ds-time.txt
-echo ----------------------- | tee -a ds-time.txt
-}
-
-
-ds_parallel &
-#while read -r image; do
-#	[ -z "${image}" ] && continue
-#	if [[ -z $images ]]; then
-#		sudo docker pull "$image"
-#	fi
-#	newimage=$image
-#	img=$image
-#	if [[ $img == *"@sha256:"* ]]; then
-#		IFS='@'
-#		#Read the split words into an array based on comma delimiter
-#		read -a strarr <<< $img
-#
-#		imagename=${strarr[0]}
-#		if [[ $imagename == *":"* ]]; then
-#			newimage="$imagename-${img: -6}"
-#		else
-#			newimage="$imagename:${img: -6}"
-#		fi
-#	fi
-#	sudo docker tag "$image" $reg/$newimage
-#	sudo docker push $reg/$newimage
-#done < $list
