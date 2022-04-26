@@ -4,7 +4,7 @@ reg="registry-server.dkube.io:443"
 list=""
 dkube_version=""
 log_file="/tmp/upload-images.log"
-metrics_file="time.txt"
+metrics_file="metrics.txt"
 usage () {
     echo "USAGE: $0 --dkube-version 3.1.0.3 [--image-list images.txt] [--images images.tar or /path/to/images/directory] [--registry my.registry.com:5000]"
     echo "  [--dkube-version version] version of dkube of which images have to be uploaded."
@@ -86,9 +86,10 @@ if [[ ! -z $image_list && ! -z $images ]]; then
 	cat $list | parallel --bar -P 5  ./scripts/push.sh
 else
 	echo "Uploading non-datascience images..." | tee -a $log_file
-	./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file 2>&1 | tee -a $log_file
+	./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file
 	echo "Done uploading non-datascience images!" | tee -a $log_file
-	echo "Uploading datascience images in the background..." | tee -a $log_file
-        echo "Follow progress using this command: tail -f $log_file" 
-	nohup ./scripts/parallel-pull-push.sh images/$dkube_version-ds.txt $metrics_file $log_file >> $log_file 2>&1 &
+	echo "This script will upload datascience images in the background..." | tee -a $log_file
+	echo "Follow progress of datascience images using this command: tail -f $log_file"
+	echo "Meanwhile, you may proceed with DKube installation."
+	nohup ./scripts/parallel-pull-push.sh images/$dkube_version-ds.txt $metrics_file $log_file >> /dev/null 2>&1 &
 fi
