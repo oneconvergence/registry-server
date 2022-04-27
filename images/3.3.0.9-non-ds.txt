@@ -147,5 +147,8 @@ quay.io/jetstack/cert-manager-controller:v1.3.1
 quay.io/jetstack/cert-manager-webhook:v1.3.1
 quay.io/prometheus/node-exporter:v0.15.2
 docker.io/prom/alertmanager:v0.23.0
-docker.io/ocdr/dkube-d3deploylogger:v1.1
 docker.io/ocdr/deployments-exporter:3.3.0.9
+quay.io/coreos/grafana-watcher:v0.0.8
+docker.io/grafana/grafana:8.4.4
+docker.io/ocdr/dkube-grafana:8.4.4
+docker.io/ocdr/dkube-d3deploylogger:v1.2
