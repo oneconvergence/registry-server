@@ -19,7 +19,7 @@ DIFF=$(echo "$END - $START" | bc)
 echo DIFF time: $DIFF >>  $metrics_file
 echo Done pulling and pushing images from: $list >> $log_file
 echo Done pulling and pushing images from: $list >> $metrics_file
-if [[ $list == *-ds.txt ]]
+if [[ $list == *-ds.txt ]]; then
 	echo Finished uploading all images! >> $log_file
 	echo Finished uploading all images! >> $metrics_file
 fi
