@@ -37,6 +37,10 @@ while [[ $# -gt 0 ]]; do
 	shift # past argument
 	shift # past value
 	;;
+	-m|--minimal)
+	minimal="true"
+	shift
+	;;
 	-h|--help)
 	help="true"
 	shift
@@ -86,7 +90,11 @@ if [[ ! -z $image_list && ! -z $images ]]; then
 	cat $list | parallel --bar -P 5  ./scripts/push.sh
 else
 	echo "Uploading non-datascience images..." | tee -a $log_file
-	./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file
+	if [[ $minimal ]]; then
+		./scripts/parallel-pull-push.sh images/$dkube_version-non-ds-minimal.txt $metrics_file $log_file
+	else
+		./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file
+	fi
 	echo "Done uploading non-datascience images!" | tee -a $log_file
 	echo "This script will upload datascience images in the background..." | tee -a $log_file
 	echo "Follow progress of datascience images using this command: tail -f $log_file"
