@@ -8,6 +8,7 @@ metrics_file="metrics.txt"
 usage () {
     echo "USAGE: $0 --dkube-version 3.1.0.3 [--image-list images.txt] [--images images.tar or /path/to/images/directory] [--registry my.registry.com:5000]"
     echo "  [--dkube-version version] version of dkube of which images have to be uploaded."
+    echo "  [-m|--minimal] Optional. Flag to upload images for minimal version of dkube."
     echo "  [-l|--image-list path] Optional. Text file with list of images; one image per line."
     echo "  [-i|--images path] Optional. tar/tar.gz file containing source images to upload or path to directory containing multiple image tar files."
     echo "  [-r|--registry registry:port] Optional. target private registry:port."
@@ -36,6 +37,10 @@ while [[ $# -gt 0 ]]; do
 	images="$2"
 	shift # past argument
 	shift # past value
+	;;
+	-m|--minimal)
+	minimal="true"
+	shift
 	;;
 	-h|--help)
 	help="true"
@@ -86,7 +91,11 @@ if [[ ! -z $image_list && ! -z $images ]]; then
 	cat $list | parallel --bar -P 5  ./scripts/push.sh
 else
 	echo "Uploading non-datascience images..." | tee -a $log_file
-	./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file
+	if [[ $minimal ]]; then
+		./scripts/parallel-pull-push.sh images/$dkube_version-non-ds-minimal.txt $metrics_file $log_file
+	else
+		./scripts/parallel-pull-push.sh images/$dkube_version-non-ds.txt $metrics_file $log_file
+	fi
 	echo "Done uploading non-datascience images!" | tee -a $log_file
 	echo "This script will upload datascience images in the background..." | tee -a $log_file
 	echo "Follow progress of datascience images using this command: tail -f $log_file"
