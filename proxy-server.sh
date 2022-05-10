@@ -1,4 +1,7 @@
 #!/bin/bash
+
+k8s_ini="$HOME/.dkube/k8s.ini"
+
 usage () {
     echo "USAGE: $0 OPTION"
     echo "  [--start] Start proxy server."
@@ -6,9 +9,11 @@ usage () {
     echo "  [-h|--help] Usage message"
 }
 
+proxy_server_port=$(awk -F "=" '/^proxy_server_port/ {print $2}' $k8s_ini)
+
 start_proxy_server() {
     sudo docker run --name squid -d --restart=always \
-      --publish 3128:3128 \
+      --publish $proxy_server_port:3128 \
       --volume $PWD/proxy-server/config/squid.conf:/etc/squid/squid.conf \
       --volume /srv/docker/squid/cache:/var/spool/squid \
       sameersbn/squid:3.5.27-2
