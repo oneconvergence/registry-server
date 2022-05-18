@@ -102,5 +102,8 @@ done < $tmpfile
 
 # Sort and remove repetitions
 cat $imgsfile | sort | uniq > $tmpfile
-mv $tmpfile $imgsfile
-echo "Generated list of images in $imgsfile."
+rm $imgsfile
+grep 'datascience' $tmpfile > $tag-ds.txt
+sed -i '/datascience/d' $tmpfile
+mv $tmpfile $tag-non-ds.txt
+echo "Generated list of images in $tag-ds.txt and $tag-non-ds.txt!"

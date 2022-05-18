@@ -3,9 +3,12 @@ images=""
 reg="registry-server.dkube.io:443"
 list=""
 dkube_version=""
+log_file="/tmp/upload-images.log"
+metrics_file="/tmp/upload-images-metrics.txt"
 usage () {
     echo "USAGE: $0 --dkube-version 3.1.0.3 [--image-list images.txt] [--images images.tar or /path/to/images/directory] [--registry my.registry.com:5000]"
     echo "  [--dkube-version version] version of dkube of which images have to be uploaded."
+    echo "  [-m|--minimal] Optional. Flag to upload images for minimal version of dkube."
     echo "  [-l|--image-list path] Optional. Text file with list of images; one image per line."
     echo "  [-i|--images path] Optional. tar/tar.gz file containing source images to upload or path to directory containing multiple image tar files."
     echo "  [-r|--registry registry:port] Optional. target private registry:port."
@@ -35,6 +38,10 @@ while [[ $# -gt 0 ]]; do
 	shift # past argument
 	shift # past value
 	;;
+	-m|--minimal)
+	minimal="true"
+	shift
+	;;
 	-h|--help)
 	help="true"
 	shift
@@ -60,7 +67,11 @@ if [[ ! -z $image_list ]]; then
 	list=$image_list
 fi
 
-if [[ ! -z $images ]]; then
+echo Logs available at: $log_file 
+echo Metrics available at: $metrics_file 
+
+if [[ ! -z $image_list && ! -z $images ]]; then
+	list=$image_list
 	if [ ! -d $images ]; then
 	    if [ -f $images ]; then
 		if [ [ $images == *.tar ] || [ $images == *.tar.gz ] ]; then
@@ -77,27 +88,17 @@ if [[ ! -z $images ]]; then
 	    	sudo docker load --input ${f} 
 	    done
 	fi 
+	cat $list | parallel --bar -P 5  ./scripts/push.sh
+else
+	echo "Uploading images..." | tee -a $log_file
+	if [[ $minimal ]]; then
+		./scripts/parallel-pull-push.sh images/$dkube_version-minimal.txt $metrics_file $log_file
+	else
+		./scripts/parallel-pull-push.sh images/$dkube_version.txt $metrics_file $log_file
+	fi
+	echo "Done uploading non-datascience images!" | tee -a $log_file
+	echo "This script will upload datascience images in the background..." | tee -a $log_file
+	echo "Follow progress of datascience images using this command: tail -f $log_file"
+	echo "Meanwhile, you may proceed with DKube installation."
+	nohup ./scripts/parallel-pull-push.sh images/$dkube_version-ds.txt $metrics_file $log_file >> /dev/null 2>&1 &
 fi
-
-while read -r image; do
-	[ -z "${image}" ] && continue
-	if [[ -z $images ]]; then
-		sudo docker pull "$image"
-	fi
-	newimage=$image
-	img=$image
-	if [[ $img == *"@sha256:"* ]]; then
-		IFS='@'
-		#Read the split words into an array based on comma delimiter
-		read -a strarr <<< $img
-
-		imagename=${strarr[0]}
-		if [[ $imagename == *":"* ]]; then
-			newimage="$imagename-${img: -6}"
-		else
-			newimage="$imagename:${img: -6}"
-		fi
-	fi
-	sudo docker tag "$image" $reg/$newimage
-	sudo docker push $reg/$newimage
-done < $list

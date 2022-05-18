@@ -5,6 +5,28 @@ usage () {
     echo "  [-h|--help] Usage message"
 }
 
+packageList="docker-compose parallel curl wget"
+distro=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+if [[ $distro == *"Ubuntu"* ]]; then
+        for packageName in $packageList; do
+		dpkg -s $packageName &> /dev/null
+                if [ $? -ne 0 ]; then
+                        echo "Install failed: Package $packageName not installed."
+                        echo "Please install the following packages and retry: [$packageList]"
+                        exit 1
+                fi
+        done
+elif [[ $distro == *"CentOS"* ]]; then
+        for packageName in $packageList; do
+                yum list installed $packageName &> /dev/null
+                if [ $? -ne 0 ]; then
+                        echo "Install failed: Package $packageName not installed."
+                        echo "Please install the following packages and retry: [$packageList]"
+                        exit 1
+                fi
+        done
+fi
+
 
 privateIP="$(hostname -I | awk '{print $1;}')"
 echo "Using local IP $privateIP for registry-server..."
