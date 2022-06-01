@@ -2,6 +2,7 @@
 usage () {
     echo "USAGE: $0 [--address x.x.x.x]"
     echo "  [-i|--address IPAddress] Optional. Local IP of the machine on which this script is to be run."
+    echo "  [-u|--uninstall] Uninstall harbor registry"
     echo "  [-h|--help] Usage message"
 }
 
@@ -42,6 +43,11 @@ while [[ $# -gt 0 ]]; do
         -h|--help)
         help="true"
         shift
+        ;;
+        -u|--uninstall)
+        cd installer
+        sudo docker-compose down
+        exit 0
         ;;
         *)
         usage
