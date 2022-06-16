@@ -29,9 +29,6 @@ elif [[ $distro == *"CentOS"* ]]; then
 fi
 
 
-privateIP="$(hostname -I | awk '{print $1;}')"
-echo "Using local IP $privateIP for registry-server..."
-
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
@@ -60,6 +57,9 @@ if [[ $help ]]; then
     exit 0
 fi
 
+privateIP="$(hostname -I | awk '{print $1;}')"
+echo "Using local IP $privateIP for registry-server..."
+
 echo "Updating hosts list on registry-server node..."
 numDkubeRegistryhosts=$(grep -nr "registry-server.dkube.io" /etc/hosts | wc -l)
 if [ $numDkubeRegistryhosts -lt 1 ]; then
@@ -81,7 +81,7 @@ echo "Bringing up harbor registry server..."
 docker_certs_path="/etc/docker/certs.d/registry-server.dkube.io:443"
 sed -i "s/registry_server_IP/$privateIP/g" ./installer/docker-compose.yml
 cd installer
-sudo docker-compose up --detach
+sudo docker-compose up -d
 sudo docker-compose logs -f -t > /tmp/harbor.log &
 
 # Check if registry server is running

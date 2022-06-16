@@ -5,9 +5,8 @@ docker_certs_path="/etc/docker/certs.d/registry-server.dkube.io:443"
 k8s_ini="$HOME/.dkube/k8s.ini"
 
 usage () {
-    echo "USAGE: $0 [--user ubuntu] [--nodes \"10.0.0.120 10.0.0.121\"]"
-    echo "  [--user] Optional. Username for the nodes in the k8s cluster. Taken from ~/.dkube/k8s.ini by default."
-    echo "  [--nodes] Optional. List of node ips separated by space and enclosed in double quotes. Taken from ~/.dkube/k8s.ini by default." 
+    echo "USAGE: $0"
+    echo "  Modify ~/.dkube/k8s.ini to contain the list of node IPS and ssh user before running script. All nodes should be accessible by ssh passwordlessly."
     echo "  [-h|--help] Usage message"
 }
 
@@ -17,16 +16,6 @@ user=$(sed -n -e 's/user=//p' $k8s_ini)
 while [[ $# -gt 0 ]]; do
     key="$1"
     case $key in
-        --user)
-        user="$2"
-        shift # past argument
-        shift # past value
-        ;;
-        --nodes)
-        bnodes="$2"
-        shift # past argument
-        shift # past value
-        ;;
         -h|--help)
         help="true"
         shift
