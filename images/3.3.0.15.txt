@@ -146,7 +146,7 @@ quay.io/jetstack/cert-manager-cainjector:v1.3.1
 quay.io/jetstack/cert-manager-controller:v1.3.1
 quay.io/jetstack/cert-manager-webhook:v1.3.1
 quay.io/prometheus/node-exporter:v0.15.2
-docker.io/prom/alertmanager:v0.23.0
+docker.io/ocdr/dkube-alertmanager:v0.23.0
 docker.io/ocdr/deployments-exporter:3.3.0.15
 quay.io/coreos/grafana-watcher:v0.0.8
 docker.io/grafana/grafana:8.4.4
