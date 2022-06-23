@@ -20,7 +20,6 @@ docker.io/mpioperator/mpi-operator:0.3.0
 docker.io/nvidia/k8s-device-plugin:1.11
 docker.io/ocdr/admission-webhook-server:3.3.0.15
 docker.io/ocdr/d3cicd:1.5.8
-docker.io/ocdr/d3-kfplapiserver:3.3.0.15
 docker.io/ocdr/d3kubeflow-migrate:3.3.0.15
 docker.io/ocdr/d3-mlflowserver:3.3.0.15
 docker.io/ocdr/d3-modelmonitor:3.3.0.15
