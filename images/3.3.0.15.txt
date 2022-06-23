@@ -151,3 +151,5 @@ quay.io/coreos/grafana-watcher:v0.0.8
 docker.io/grafana/grafana:8.4.4
 docker.io/ocdr/dkube-grafana:8.4.4
 docker.io/ocdr/dkube-d3deploylogger:v1.2
+docker.io/timescale/timescaledb-ha:pg13.7-ts2.6.1-p0
+docker.io/timescale/promscale:latest

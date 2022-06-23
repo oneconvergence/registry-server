@@ -61,3 +61,5 @@ gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/entrypoint:v0.24.1@sha25
 quay.io/coreos/grafana-watcher:v0.0.8
 quay.io/coreos/kube-state-metrics:v1.9.7
 quay.io/prometheus/node-exporter:v0.15.2
+docker.io/timescale/timescaledb-ha:pg13.7-ts2.6.1-p0
+docker.io/timescale/promscale:latest
