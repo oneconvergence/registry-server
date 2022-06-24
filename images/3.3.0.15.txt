@@ -28,7 +28,6 @@ docker.io/ocdr/dkubeadm:3.3.0.15
 docker.io/ocdr/dkube-airgap-admission-webhook-server:3.3.0.15
 docker.io/ocdr/dkube-d3api:3.3.0.15
 docker.io/ocdr/dkube-d3auth:3.3.0.15
-docker.io/ocdr/dkube-d3auth:airgap-lic
 docker.io/ocdr/dkube-d3dbmigrate:3.3.0.15
 docker.io/ocdr/dkube-d3downloader:3.3.0.15
 docker.io/ocdr/dkube-d3ext:3.3.0.15
