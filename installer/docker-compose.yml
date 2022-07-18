@@ -3,6 +3,7 @@ version: '2'
 services:
   registry:
     image: docker.io/bitnami/harbor-registry:2.4.0
+    restart: unless-stopped
     environment:
       - REGISTRY_HTTP_SECRET=CHANGEME
     volumes:
@@ -10,6 +11,7 @@ services:
       - ./config/registry/:/etc/registry/:ro
   registryctl:
     image: docker.io/bitnami/harbor-registryctl:2.4.0
+    restart: unless-stopped
     environment:
       - CORE_SECRET=CHANGEME
       - JOBSERVICE_SECRET=CHANGEME
@@ -20,6 +22,7 @@ services:
       - ./config/registryctl/config.yml:/etc/registryctl/config.yml:ro
   postgresql:
     image: docker.io/bitnami/postgresql:11
+    restart: unless-stopped
     container_name: harbor-db
     environment:
       - POSTGRESQL_PASSWORD=bitnami
@@ -28,6 +31,7 @@ services:
       - postgresql_data:/bitnami/postgresql
   core:
     image: docker.io/bitnami/harbor-core:2.4.0
+    restart: unless-stopped
     extra_hosts:
       - "registry-server.dkube.io:registry_server_IP"
     container_name: harbor-core
@@ -73,11 +77,13 @@ services:
       - ./config/core/private_key.pem:/etc/core/private_key.pem:ro
   portal:
     image: docker.io/bitnami/harbor-portal:2.4.0
+    restart: unless-stopped
     container_name: harbor-portal
     depends_on:
       - core
   jobservice:
     image: docker.io/bitnami/harbor-jobservice:2.4.0
+    restart: unless-stopped
     container_name: harbor-jobservice
     depends_on:
       - redis
@@ -94,11 +100,13 @@ services:
       - ./config/jobservice/config.yml:/etc/jobservice/config.yml:ro
   redis:
     image: docker.io/bitnami/redis:6.0
+    restart: unless-stopped
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
   harbor-nginx:
     image: docker.io/bitnami/nginx:1.21
+    restart: unless-stopped
     container_name: nginx
     volumes:
       - /home/ubuntu/registry-server/installer/config/proxy/:/opt/bitnami/nginx/conf/:ro
@@ -112,6 +120,7 @@ services:
   chartmuseum:
     container_name: chartmuseum
     image: docker.io/bitnami/chartmuseum:0
+    restart: unless-stopped
     environment:
       - CACHE=redis
       - CACHE_REDIS_ADDR=redis:6379
